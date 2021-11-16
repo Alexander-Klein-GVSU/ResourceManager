@@ -1,11 +1,12 @@
 import Process
 import Resource
+import copy
 
 #Function
 def checker(p, r, rl):
     #Initializes internal values.
-    prcCpy = p
-    resCpy = r
+    prcCpy = copy.deepcopy(p)
+    resCpy = copy.deepcopy(r)
     finishedPrcs = 0
     stuckPrcs = 0
 
