@@ -25,3 +25,9 @@ class Process:
 
     def isFinished(self):
         return self.finished
+
+    def getRequests(self, n):
+        return self.requests[n]
+
+    def getHas(self, n):
+        return self.has[n]

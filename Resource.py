@@ -3,17 +3,17 @@ class Resource:
         self.total = n
         self.available = n
 
-    def provideRes(self):
-        if (self.available > 0):
-            self.available -= 1
+    def provideRes(self, n):
+        if (self.available - n >= 0):
+            self.available -= n
             return 0
         else:
             print("Error: Resource Shortage")
             return 1
         
-    def returnRes(self):
-        if (self.available < self.total):
-            self.available += 1
+    def returnRes(self, n):
+        if (self.available + n <= self.total):
+            self.available += n
             return 0
         else:
             print("Error: Resource Overflow")
