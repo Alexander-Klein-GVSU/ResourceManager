@@ -122,4 +122,4 @@ for i in range(2, len(input)):
         print(runOption)
         print("\n")
     #Draws visual representation of processes and resources.
-    GUI.draw(hasP, wantP, dl, runOption)
+    GUI.draw(hasP, wantP, dl, runOption, i)
