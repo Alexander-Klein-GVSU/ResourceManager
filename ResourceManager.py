@@ -40,8 +40,9 @@ def checker(has, want, available, total, finished, rl):
                         hasC[i][j] = 0
                         finishC[i] = True
                     finishedPrcs += 1
-                    runOption[rl] = iterations
-                    rl += 1
+                    if (iterations not in runOption):
+                        runOption[rl] = iterations
+                        rl += 1
                     checker(hasC, wantC, availC, totalC, finishC, rl)
                 #If the process doesnt have all of its processes.
                 else:
@@ -51,7 +52,7 @@ def checker(has, want, available, total, finished, rl):
                         wantC[i][j] -= min(wantC[i][j], availC[j])
                         availC[j] -= min(wantC[i][j], availC[j])
                 hasAll = 0
-                #Counts if the process has all of its resources, releasing them if it does.
+                #Counts if the process has all of its resources.
                 for j in range(resources):
                     if (wantC[i][j] == 0):
                         hasAll += 1
@@ -133,9 +134,13 @@ for i in range(2, len(input)):
     #Checks if the processes can all be completed.
     
     dl = False
-    runOption = [0 for i in range(processes)]
+    runOption = [-1 for i in range(processes)]
     runLocation = 0
     checker(hasP, wantP, availableR, totalR, pFinished, runLocation)
+    for val in runOption:
+        if (val < 0):
+            dl = True
+            break
     if (dl):
         print("Processes are stuck in a deadlock.\n")
     else:
