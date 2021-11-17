@@ -1,69 +1,48 @@
 import copy
+import GUI
 
 # Name: Alexander Klein
 # Date: 11/15/21
 # Assignment: Resource Manager
 
-#Function
-def checker(has, want, available, total, finished, rl):
+#Deadlock Checker Function
+def checker(has, want, available):
     #Initializes internal values.
-    hasC = copy.deepcopy(has)
-    wantC = copy.deepcopy(want)
     availC = copy.deepcopy(available)
-    totalC = copy.deepcopy(total)
-    finishC = copy.deepcopy(finished)
-    finishedPrcs = 0
-    stuckPrcs = 0
+    finished = [False for i in range(len(has))]
+    runnable = True
+    rl = 0
 
-    #Checks if every process is finished
-    for i in range(processes):
-        if (finishC[i]):
-            finishedPrcs += 1
-    if (finishedPrcs == processes):
-        dl = False
+    #While processes can be completed.
+    while (runnable):
+        runnable = False
+        #Checks for an unfinished Process.
+        for i in range(len(has)):
+            if (finished[i] == False):
+                #Checks if the resources are available to the process.
+                canHaveAll = 0
+                for j in range(len(has[i])):
+                    if (availC[j] >= want[i][j]):
+                        canHaveAll += 1
+                #If they are, it releases all of the resources in it, 
+                #sets the process as finished, and
+                #adds the process to the runOrder.
+                if (canHaveAll == len(has[i])):
+                    for j in range(len(has[i])):
+                        availC[j] += has[i][j]
+                    finished[i] = True
+                    runnable = True
+                    runOption[rl] = i
+                    rl += 1
+    #If all processes can be finished, it returns no dl.
+    totalF = 0
+    for i in (range(len(finished))):
+        if (finished[i] == True):
+            totalF += 1
+    if (totalF == len(finished)):
+        return False
     else:
-        finishedPrcs = 0
-        stuckPrcs = 0
-        iterations = -1
-        for i in range(processes):
-            iterations += 1
-            #If the process is not finished.
-            if (not(finishC[i])):
-                hasAll = 0
-                #Counts if the process has all of its resources, releasing them if it does.
-                for j in range(resources):
-                    if (wantC[i][j] == 0):
-                        hasAll += 1
-                if (hasAll == resources):
-                    for j in range(resources):
-                        availC[j] += hasC[i][j]
-                        hasC[i][j] = 0
-                        finishC[i] = True
-                    finishedPrcs += 1
-                    if (iterations not in runOption):
-                        runOption[rl] = iterations
-                        rl += 1
-                    checker(hasC, wantC, availC, totalC, finishC, rl)
-                #If the process doesnt have all of its processes.
-                else:
-                    for j in range(resources):
-                        #Allocates the resources if they are available.
-                        hasC[i][j] += min(wantC[i][j], availC[j])
-                        wantC[i][j] -= min(wantC[i][j], availC[j])
-                        availC[j] -= min(wantC[i][j], availC[j])
-                hasAll = 0
-                #Counts if the process has all of its resources.
-                for j in range(resources):
-                    if (wantC[i][j] == 0):
-                        hasAll += 1
-                if (hasAll == resources):
-                    checker(hasC, wantC, availC, totalC, finishC, rl)
-                else:
-                    stuckPrcs += 1
-            else:
-                finishedPrcs += 1
-    if (not(finishedPrcs == processes) and (finishedPrcs + stuckPrcs == processes)):
-        dl = True
+        return True
 
 #Opens the file.
 file = open("upload.txt", "r")
@@ -86,7 +65,6 @@ availableR = [0 for i in range(resources)]
 totalR = [0 for i in range(resources)]
 wantP = [[0 for i in range(resources)] for j in range(processes)]
 hasP = [[0 for i in range(resources)] for j in range(processes)]
-pFinished = [False for i in range(processes)]
 
 #Generates the resources.
 for i in range(1, resources+1):
@@ -108,7 +86,6 @@ for i in range(2, len(input)):
         else:
             #Requests the number of resources by the process.
             wantP[input[i][1]][input[i][2]] += input[i][3]
-            pFinished[input[i][1]] = False
     
         #Allocates the resources if they are available.
         hasP[input[i][1]][input[i][2]] += min(input[i][3], availableR[input[i][2]])
@@ -132,21 +109,16 @@ for i in range(2, len(input)):
         print("Error: Invalid Command\n")
 
     #Checks if the processes can all be completed.
-    
-    dl = False
     runOption = [-1 for i in range(processes)]
-    runLocation = 0
-    checker(hasP, wantP, availableR, totalR, pFinished, runLocation)
-    for val in runOption:
-        if (val < 0):
-            dl = True
-            break
+    dl = checker(hasP, wantP, availableR)
     if (dl):
         print("Processes are stuck in a deadlock.\n")
     else:
         print("All Processes can run correctly:\n")
         print(runOption)
         print("\n")
+    #Draws visual representation of processes and resources.
+    GUI.draw(hasP, wantP, dl, runOption)
 
 #Closes the file.
 file.close()
