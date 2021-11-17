@@ -47,6 +47,10 @@ def checker(has, want, available):
 #Opens the file.
 file = open("upload.txt", "r")
 input = file.read()
+#Closes the file.
+file.close()
+
+#Processes Input
 input = input.split('\n')
 
 i = 0
@@ -119,6 +123,3 @@ for i in range(2, len(input)):
         print("\n")
     #Draws visual representation of processes and resources.
     GUI.draw(hasP, wantP, dl, runOption)
-
-#Closes the file.
-file.close()
